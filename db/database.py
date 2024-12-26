@@ -3,3 +3,6 @@ from typing import Optional
 
 class Settings(BaseSettings):
     SECRET_KEY: Optional[str] = None
+
+    class Config:
+        env_file = ".env"
