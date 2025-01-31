@@ -19,9 +19,13 @@ async def get_register_form(request: Request):
 @router.get('/login')
 async def get_login_form(request: Request):
     if has_valid_token(request):
-        return RedirectResponse(url="/pages/profile")
+        return RedirectResponse(url="/pages/unassigned_applications")
     return templates.TemplateResponse(name='login_form.html', context={'request': request})
 
 @router.get('/profile')
 async def get_my_profile(request: Request, profile=Depends(get_me)):
     return templates.TemplateResponse(name='profile.html', context={'request': request, 'profile': profile})
+
+@router.get('/unassigned_applications')
+async def see_unassigned_applications(request: Request, profile=Depends(get_me)):
+    return templates.TemplateResponse(name='unassigned_applications.html', context={'request': request, 'profile': profile})

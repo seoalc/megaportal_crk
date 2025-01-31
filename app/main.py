@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory='app/templates')
 def home_page(request: Request):
     # return {"message": "Это мегапортал ЦРК"}
     if has_valid_token(request):
-        return RedirectResponse(url="/pages/profile")
+        return RedirectResponse(url="/pages/unassigned_applications")
     return templates.TemplateResponse(name='login_form.html', context={'request': request})
 
 app.include_router(router_users)
