@@ -6,11 +6,11 @@
 
   /* scrollar */
 
-    new PerfectScrollbar(".quick-menu")
+    // new PerfectScrollbar(".quick-menu")
 
-    new PerfectScrollbar(".notify-list")
+    // new PerfectScrollbar(".notify-list")
 
-    new PerfectScrollbar(".search-content")
+    // new PerfectScrollbar(".search-content")
 
     
 
@@ -62,26 +62,26 @@
 
     /* search control */
 
-    $(".search-control").click(function(){
-      $(".search-popup").addClass("d-block");
-      $(".search-close").addClass("d-block");
-    });
+    // $(".search-control").click(function(){
+    //   $(".search-popup").addClass("d-block");
+    //   $(".search-close").addClass("d-block");
+    // });
 
 
-    $(".search-close").click(function(){
-      $(".search-popup").removeClass("d-block");
-      $(".search-close").removeClass("d-block");
-    });
+    // $(".search-close").click(function(){
+    //   $(".search-popup").removeClass("d-block");
+    //   $(".search-close").removeClass("d-block");
+    // });
 
     
-    $(".mobile-search-btn").click(function(){
-      $(".search-popup").addClass("d-block");
-    });
+    // $(".mobile-search-btn").click(function(){
+    //   $(".search-popup").addClass("d-block");
+    // });
 
 
-    $(".mobile-search-close").click(function(){
-      $(".search-popup").removeClass("d-block");
-    });
+    // $(".mobile-search-close").click(function(){
+    //   $(".search-popup").removeClass("d-block");
+    // });
 
 
   /* sidenav */

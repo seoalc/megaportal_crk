@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.users.router import router as router_users
 from app.pages.router import router as router_pages
+from app.applications.router import router as router_applications
 from app.users.dependencies import has_valid_token
 
 app = FastAPI()
@@ -17,6 +18,7 @@ def home_page(request: Request):
     return templates.TemplateResponse(name='login_form.html', context={'request': request})
 
 app.include_router(router_users)
+app.include_router(router_applications)
 app.include_router(router_pages)
 
 app.mount('/static', StaticFiles(directory='app/static'), 'static')
