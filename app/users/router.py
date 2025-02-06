@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Response, Depends
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.users.dao import UsersDAO
 from app.users.schemas import SUserRegister, SUserAuth
-from app.users.dependencies import get_current_user, get_current_admin_user
+from app.users.dependencies import get_current_user, get_current_admin_user, get_current_dispatcher_user
 from app.users.models import User
 
 
@@ -42,5 +42,5 @@ async def logout_user(response: Response):
     return {'message': 'Пользователь успешно вышел из системы'}
 
 @router.get("/all_users/")
-async def get_all_users(user_data: User = Depends(get_current_admin_user)):
+async def get_all_users(user_data: User = Depends(get_current_dispatcher_user)):
     return await UsersDAO.find_all()

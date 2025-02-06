@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Response, Depends
 from fastapi.responses import RedirectResponse
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.applications.dao import ApplicationDAO
-# from app.users.schemas import SUserRegister, SUserAuth
+from app.applications.schemas import SApplicationAdd
 # from app.users.dependencies import get_current_user, get_current_admin_user
 from app.applications.models import Application
 from app.utils.logging_config import logger
@@ -24,3 +24,13 @@ async def get_all_applications_by_number(subscriber_number: int):
     logger.info(f"Данные заявок: {rez}")
     # return RedirectResponse(url=f"/pages/searchnumber/{subscriber_number}")
     return rez
+
+@router.post("/add/")
+async def add_application(application: SApplicationAdd) -> dict:
+    logger.info(f"Данные заявок: {application}")
+    check = await ApplicationDAO.add_application(**application.dict())
+    if check:
+        # return RedirectResponse(url=f"/pages/searchnumber/{application.subscriber_number}")
+        return {"message": "Новая заявка успешно добавлена!", "application": application, "ok": True}
+    else:
+        return {"message": "Ошибка при добавлении заявки!"}

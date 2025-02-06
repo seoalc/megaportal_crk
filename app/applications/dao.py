@@ -21,3 +21,14 @@ class ApplicationDAO(BaseDAO):
             query = select(cls.model).filter(cls.model.subscriber_number == subscriber_number)
             result = await session.execute(query)
             return result.scalars().all()
+
+    @classmethod
+    async def add_application(cls, **application_data: dict):
+        async with async_session_maker() as session:
+            async with session.begin():
+                new_application = Application(**application_data)
+                session.add(new_application)
+                await session.flush()
+                new_application_id = new_application.id
+                await session.commit()
+                return new_application_id
