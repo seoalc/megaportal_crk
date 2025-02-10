@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (userIdForApplicationButton) {
         userIdForApplicationButton.addEventListener("click", async function (event) {
-            console.log(1);
             const selectedUserId = selectElement.value;
             console.log(selectedUserId);
 
