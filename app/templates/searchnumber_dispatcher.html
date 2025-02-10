@@ -35,19 +35,7 @@
             <!-- ========== Left Sidebar ========== -->
             <div class="main-menu">
                 <!-- Brand Logo -->
-                <div class="logo-box">
-                    <!-- Brand Logo Light -->
-                    <a href="index.html" class="logo-light">
-                        <img src="/static/dashtrap/assets/images/logo-light.png" alt="logo" class="logo-lg" height="28">
-                        <img src="/static/dashtrap/assets/images/logo-sm.png" alt="small logo" class="logo-sm" height="28">
-                    </a>
-
-                    <!-- Brand Logo Dark -->
-                    <a href="index.html" class="logo-dark">
-                        <img src="/static/dashtrap/assets/images/logo-dark.png" alt="dark logo" class="logo-lg" height="28">
-                        <img src="/static/dashtrap/assets/images/logo-sm.png" alt="small logo" class="logo-sm" height="28">
-                    </a>
-                </div>
+                {% include "blocks/logo_box.html" %}
 
                 <!--- Menu -->
                 <div data-simplebar>
@@ -392,6 +380,7 @@
                                                                 <input type="hidden" id="user_id_created_application" name="user_id_created_application" value="{{ profile.id }}" />
                                                                 <input type="hidden" id="application_status" name="application_status" value="0" />
                                                                 <input type="hidden" id="subscriber_number" name="subscriber_number" value="{{ subscriber_number }}" />
+                                                                <input type="hidden" id="remedial_user_id" name="remedial_user_id" value="0" />
                                                                 <button class="ladda-button btn btn-primary" dir="ltr" data-style="expand-left" id="send_application">
                                                                     Отправить
                                                                 </button>

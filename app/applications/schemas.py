@@ -25,3 +25,4 @@ class SApplicationAdd(BaseModel):
     contact_number: str = Field(default=..., min_length=10, max_length=20, description="Контактный номер абонента, не более 20 символов")
     user_id_created_application: int = Field(..., description="ID пользователя забившего заявку")
     application_status: int = Field(..., description="Статус заявки")
+    remedial_user_id: int = Field(..., description="ID пользователя исполнителя")

@@ -63,8 +63,9 @@ async def see_unassigned_applications_user(request: Request, profile=Depends(get
 async def see_unassigned_applications_dispatcher(
         request: Request,
         profile=Depends(get_current_dispatcher_user),
-        applications=Depends(ApplicationDAO.get_unassigned_applications
-    )):
+        applications=Depends(ApplicationDAO.get_unassigned_applications),
+        users=Depends(get_all_users)
+    ):
     logger.info(f"Неназначенные заявки: {applications}")
     parts = profile.fio.split()  # Разбиваем строку по пробелам
     if len(parts) == 3:
@@ -72,7 +73,7 @@ async def see_unassigned_applications_dispatcher(
         filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
     return templates.TemplateResponse(
         name='unassigned_applications_dispatcher.html',
-        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio}
+        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio, 'users': users}
     )
 
 @router.get('/unassigned_applications/admin')

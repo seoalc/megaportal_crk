@@ -32,21 +32,7 @@
             <!-- ========== Left Sidebar ========== -->
             <div class="main-menu">
                 <!-- Brand Logo -->
-                <div class="logo-box">
-                    <!-- Brand Logo Light -->
-                    <a href="http://10.191.33.190:8001/" class="logo-light">
-                        <h2><span class="badge badge-soft-success">Портал ЦРК</span></h2>
-                        <!-- <img src="/static/dashtrap/assets/images/logo-light.png" alt="logo" class="logo-lg" height="28">
-                        <img src="/static/dashtrap/assets/images/logo-sm.png" alt="small logo" class="logo-sm" height="28"> -->
-                    </a>
-
-                    <!-- Brand Logo Dark -->
-                    <a href="http://10.191.33.190:8001/" class="logo-dark">
-                        <h2><span class="badge badge-soft-success">Портал ЦРК</span></h2>
-                        <!-- <img src="/static/dashtrap/assets/images/logo-dark.png" alt="dark logo" class="logo-lg" height="28">
-                        <img src="/static/dashtrap/assets/images/logo-sm.png" alt="small logo" class="logo-sm" height="28"> -->
-                    </a>
-                </div>
+                {% include "blocks/logo_box.html" %}
 
                 <!--- Menu -->
                 <div data-simplebar>
@@ -342,16 +328,14 @@
                                                     <td>{{ application.contact_number }}</td>
                                                     <td>
                                                         <div class="mt-3">
-                                                            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="user_id_for_application">
                                                                 <option selected>Выберите исполнителя</option>
                                                                 {% for user in users %}
-                                                                <!-- <option value="1">One</option>
-                                                                <option value="2">Two</option>
-                                                                <option value="3">Three</option> -->
-                                                                <option value="1">{{ user.fio }}</option>
+                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
+                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light" id="user_id_for_application_button">Назначить</button>
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -422,6 +406,7 @@
         <script src="/static/dashtrap/assets/js/pages/datatables.js"></script>
 
         <script src="/static/js/searches.js"></script>
+        <script src="/static/js/applications_work.js"></script>
 
         
     </body>

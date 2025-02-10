@@ -10,7 +10,21 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(length=255))  # Указана длина
     user_status: Mapped[int] = mapped_column(default=0)
 
-    applications = relationship("Application", back_populates="user")
+    # applications = relationship("Application", back_populates="user")
+    # remedial_applications = relationship("Application", foreign_keys="[Application.remedial_user_id]", back_populates="remedial_user")
+    # Указываем, что связь идет по user_id_created_application
+    created_applications = relationship(
+        "Application",
+        back_populates="creator",
+        foreign_keys="Application.user_id_created_application"
+    )
+
+    # Указываем, что связь идет по remedial_user_id
+    remedial_applications = relationship(
+        "Application",
+        back_populates="remedial_user",
+        foreign_keys="Application.remedial_user_id"
+    )
 
     extend_existing = True
 
