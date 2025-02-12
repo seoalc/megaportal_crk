@@ -26,3 +26,27 @@ class SApplicationAdd(BaseModel):
     user_id_created_application: int = Field(..., description="ID пользователя забившего заявку")
     application_status: int = Field(..., description="Статус заявки")
     remedial_user_id: int = Field(..., description="ID пользователя исполнителя")
+
+class SRemidialUserUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    application_id: int = Field(..., description="ID заявки")
+    application_status: int = Field(..., description="Статус заявки")
+    remedial_user_id: int = Field(..., description="ID пользователя исполнителя")
+
+class SComplaintTextUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    application_id: int = Field(..., description="ID заявки")
+    complaint_text: str = Field(default=..., description="Текст жалобы")
+
+class SAppearanceDateUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    application_id: int = Field(..., description="ID заявки")
+    appearance_date: date = Field(default=..., description="Дата явки ГГГГ-ММ-ДД")
+
+class SDeleteApplication(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    application_id: int = Field(..., description="ID заявки")

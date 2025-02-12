@@ -139,3 +139,52 @@ async def see_unassigned_applications_admin(request: Request, profile=Depends(ge
         name='unassigned_applications_admin.html',
         context={'request': request, 'profile': profile}
     )
+
+@router.get('/assigned_applications')
+async def see_assigned_applications(request: Request, profile=Depends(get_me), users=Depends(get_all_users)):
+    logger.info(f"Данные пользователя: {profile.user_status}")
+    if profile.user_status == UserStatus.USER:
+        return RedirectResponse(url="/pages/assigned_applications/user")
+    elif profile.user_status == UserStatus.DISPATCHER:
+        return RedirectResponse(url="/pages/assigned_applications/dispatcher")
+    elif profile.user_status == UserStatus.ADMIN:
+        return RedirectResponse(url="/pages/assigned_applications/admin")
+    else:
+        raise HTTPException(status_code=400, detail="Неизвестная роль пользователя")
+    return templates.TemplateResponse(name='assigned_applications.html', context={'request': request, 'profile': profile, 'users': users})
+
+@router.get('/assigned_applications/user')
+async def see_assigned_applications_user(request: Request, profile=Depends(get_current_user)):
+    if profile.user_status != UserStatus.USER:
+        if profile.user_status == UserStatus.DISPATCHER:
+            return RedirectResponse(url="/pages/unassigned_applications/dispatcher")
+        elif profile.user_status == UserStatus.ADMIN:
+            return RedirectResponse(url="/pages/unassigned_applications/admin")
+    return templates.TemplateResponse(
+        name='assigned_applications.html',
+        context={'request': request, 'profile': profile}
+    )
+
+@router.get('/assigned_applications/dispatcher')
+async def see_assigned_applications_dispatcher(
+        request: Request,
+        profile=Depends(get_current_dispatcher_user),
+        applications=Depends(ApplicationDAO.get_assigned_applications),
+        users=Depends(get_all_users)
+    ):
+    logger.info(f"Заявки в работе: {applications}")
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
+    return templates.TemplateResponse(
+        name='assigned_applications_dispatcher.html',
+        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio, 'users': users}
+    )
+
+@router.get('/assigned_applications/admin')
+async def see_assigned_applications_admin(request: Request, profile=Depends(get_current_admin_user)):
+    return templates.TemplateResponse(
+        name='assigned_applications_admin.html',
+        context={'request': request, 'profile': profile}
+    )

@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, status, Response, Depends
 from fastapi.responses import RedirectResponse
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.applications.dao import ApplicationDAO
-from app.applications.schemas import SApplicationAdd
+from app.applications.schemas import SApplicationAdd, SRemidialUserUpdate, SComplaintTextUpdate, SAppearanceDateUpdate
+from app.applications.schemas import SDeleteApplication
 # from app.users.dependencies import get_current_user, get_current_admin_user
 from app.applications.models import Application
 from app.utils.logging_config import logger
@@ -34,3 +35,57 @@ async def add_application(application: SApplicationAdd) -> dict:
         return {"message": "Новая заявка успешно добавлена!", "application": application, "ok": True}
     else:
         return {"message": "Ошибка при добавлении заявки!"}
+
+@router.post("/remedialuserupdate/")
+async def update_remidial_user_to_application(application: SRemidialUserUpdate) -> dict:
+    logger.info(f"ID заявки и исполнителя для обновления: {application}")
+
+    updated_rows = await ApplicationDAO.update_remedial_user(
+        application_id=application.application_id, 
+        application_status=application.application_status, 
+        remedial_user_id=application.remedial_user_id
+    )
+
+    if updated_rows == 0:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    return {'ok': True, "application_id": application.application_id}
+
+@router.post("/complainttextupdate/")
+async def update_complaint_text_to_application(application: SComplaintTextUpdate) -> dict:
+    logger.info(f"Информация для обновления текста жалобы: {application}")
+
+    updated_rows = await ApplicationDAO.update_complaint_text(
+        application_id=application.application_id, 
+        complaint_text=application.complaint_text
+    )
+
+    if updated_rows == 0:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    return {'ok': True, "application_id": application.application_id}
+
+@router.post("/changeappearancedate/")
+async def change_appearance_date_application(application: SAppearanceDateUpdate) -> dict:
+    logger.info(f"Информация для зменения даты явки: {application}")
+
+    updated_rows = await ApplicationDAO.update_appearance_date(
+        application_id=application.application_id, 
+        appearance_date=application.appearance_date
+    )
+
+    if updated_rows == 0:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    return {'ok': True, "application_id": application.application_id}
+
+@router.post("/deleteapplication/")
+async def delete_application(application: SDeleteApplication) -> dict:
+    logger.info(f"Информация по удаляемой заявке: {application}")
+
+    deleted_rows = await ApplicationDAO.delete_application(application.application_id)
+
+    if deleted_rows == 0:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    return {'ok': True, "application_id": application.application_id}

@@ -71,7 +71,7 @@
                                         </a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="pages-invoice.html" class="menu-link">
+                                        <a href="/pages/assigned_applications" class="menu-link">
                                             <span class="menu-text">В работе</span>
                                         </a>
                                     </li>
@@ -309,6 +309,7 @@
                                                     <th>Дата явки</th>
                                                     <th>Контактный номер</th>
                                                     <th>Исполнитель</th>
+                                                    <th>Действия</th>
                                                 </tr>
                                             </thead>
                                         
@@ -319,23 +320,38 @@
                                                     <td>{{ loop.index }}</td>
                                                     <td>{{ application.subscriber_number }}</td>
                                                     <td>
-                                                        <textarea class="form-control" id="complaint_text" name="complaint_text" rows="5">{{ application.complaint_text }}
+                                                        <textarea class="form-control complaint_text" name="complaint_text" rows="5" data-application-id="{{ application.id }}">{{ application.complaint_text }}
                                                         </textarea>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light">Изменить</button>
+                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_complaint_text">Изменить</button>
                                                     </td>
                                                     <td>{{ application.subscriber_addres }}</td>
-                                                    <td>{{ application.appearance_date }}</td>
+                                                    <!-- <td>{{ application.appearance_date }}</td> -->
+                                                    <td>
+                                                        <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
+                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
+                                                    </td>
                                                     <td>{{ application.contact_number }}</td>
                                                     <td>
                                                         <div class="mt-3">
-                                                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="user_id_for_application">
+                                                            <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
                                                                 <option selected>Выберите исполнителя</option>
                                                                 {% for user in users %}
                                                                 <option value="{{ user.id }}">{{ user.fio }}</option>
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light" id="user_id_for_application_button">Назначить</button>
+                                                        <!-- <input type="hidden" id="application_id" name="application_id" value="{{ application.id }}" /> -->
+                                                        <p>
+                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light assign_user">Назначить</button>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Отказ</button>
+                                                        </p>
+                                                        <p>
+                                                            <button type="button" class="btn btn-danger waves-effect waves-light delete_application_button">Удалить</button>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -350,6 +366,7 @@
                                                     <th>Дата явки</th>
                                                     <th>Контактный номер</th>
                                                     <th>Исполнитель</th>
+                                                    <th>Действия</th>
                                                 </tr>
                                             </tfoot>
                                         </table>

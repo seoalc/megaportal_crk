@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Datatables | Dashtrap - Responsive Bootstrap 5 Admin Dashboard</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -22,9 +22,6 @@
 		<link href="/static/dashtrap/assets/css/style.min.css" rel="stylesheet" type="text/css">
 		<link href="/static/dashtrap/assets/css/icons.min.css" rel="stylesheet" type="text/css">
 		<script src="/static/dashtrap/assets/js/config.js"></script>
-
-        <!-- My css -->
-        <!-- <link href="/static/dashtrap/assets/css/my.css" rel="stylesheet" type="text/css"> -->
     </head>
 
     <body>
@@ -86,6 +83,8 @@
                                 </ul>
                             </div>
                         </li>
+
+                        
                     </ul>
                 </div>
             </div>
@@ -293,7 +292,7 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Поиск заявок по номеру {{ subscriber_number }}</h4>
+                                        <h4 class="header-title">Заявки в работе</h4>
                                         <!-- <p class="text-muted font-size-13 mb-4">
                                             DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
                                             function:
@@ -309,6 +308,8 @@
                                                     <th>Адрес</th>
                                                     <th>Дата явки</th>
                                                     <th>Контактный номер</th>
+                                                    <th>Исполнитель</th>
+                                                    <th>Действия</th>
                                                 </tr>
                                             </thead>
                                         
@@ -318,10 +319,37 @@
                                                 <tr>
                                                     <td>{{ loop.index }}</td>
                                                     <td>{{ application.subscriber_number }}</td>
-                                                    <td>{{ application.complaint_text }}</td>
+                                                    <td>
+                                                        <textarea class="form-control complaint_text" name="complaint_text" rows="5" data-application-id="{{ application.id }}">{{ application.complaint_text }}
+                                                        </textarea>
+                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_complaint_text">Изменить</button>
+                                                    </td>
                                                     <td>{{ application.subscriber_addres }}</td>
-                                                    <td>{{ application.appearance_date }}</td>
+                                                    <!-- <td>{{ application.appearance_date }}</td> -->
+                                                    <td>
+                                                        <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
+                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
+                                                    </td>
                                                     <td>{{ application.contact_number }}</td>
+                                                    <td>
+                                                        <div class="mt-3">
+                                                            <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
+                                                                <option selected>Выберите исполнителя</option>
+                                                                {% for user in users %}
+                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <!-- <input type="hidden" id="application_id" name="application_id" value="{{ application.id }}" /> -->
+                                                        <p>
+                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light assign_user">Изменить ВС</button>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Закрыть</button>
+                                                        </p>
+                                                    </td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
@@ -334,63 +362,16 @@
                                                     <th>Адрес</th>
                                                     <th>Дата явки</th>
                                                     <th>Контактный номер</th>
+                                                    <th>Исполнитель</th>
+                                                    <th>Действия</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
 
                                         {% else %}
-                                            <p class="text-left text-muted">Не найдено заявок по номеру {{ subscriber_number }}</p>
-                                            <div class="button-list">
-                                                <button type="button" class="btn btn-primary waves-effect waves-light" id="add_application" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg">Оформить</button>
-                                            </div>
-                                            <!--  Modal content for the Large example -->
-                                            <div class="modal fade" id="bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h4 class="modal-title" id="myLargeModalLabel">Оформление заявки на номер {{ subscriber_number }}</h4>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form class="form-horizontal" role="form" id="new-application-form">
-                                                                <div class="mb-2 row">
-                                                                    <label class="col-md-2 col-form-label" for="appearance_date">Дата явки</label>
-                                                                    <div class="col-md-10">
-                                                                        <input class="form-control" type="date" name="appearance_date" id="appearance_date">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-2 row">
-                                                                    <label class="col-md-2 col-form-label" for="subscriber_addres">Адрес</label>
-                                                                    <div class="col-md-10">
-                                                                        <input type="text" class="form-control" id="subscriber_addres" name="subscriber_addres" placeholder="Укажите адрес...">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-2 row">
-                                                                    <label class="col-md-2 col-form-label" for="complaint_text">Жалоба</label>
-                                                                    <div class="col-md-10">
-                                                                        <textarea class="form-control" id="complaint_text" name="complaint_text" rows="5"></textarea>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-2 row">
-                                                                    <label class="col-md-2 col-form-label" for="contact_number">Контактный номер</label>
-                                                                    <div class="col-md-10">
-                                                                        <input class="form-control" type="tel" id="contact_number" name="contact_number">
-                                                                    </div>
-                                                                </div>
-                                                                <input type="hidden" id="user_id_created_application" name="user_id_created_application" value="{{ profile.id }}" />
-                                                                <input type="hidden" id="application_status" name="application_status" value="0" />
-                                                                <input type="hidden" id="subscriber_number" name="subscriber_number" value="{{ subscriber_number }}" />
-                                                                <input type="hidden" id="remedial_user_id" name="remedial_user_id" value="0" />
-                                                                <button class="ladda-button btn btn-primary" dir="ltr" data-style="expand-left" id="send_application">
-                                                                    Отправить
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div><!-- /.modal-content -->
-                                                </div><!-- /.modal-dialog -->
-                                            </div><!-- /.modal -->
+                                          <p class="text-center text-muted">Нет заявок в работе</p>
                                         {% endif %}
-                                        
+
                                     </div> <!-- end card body-->
                                 </div> <!-- end card -->
                             </div><!-- end col-->
@@ -439,6 +420,7 @@
         <script src="/static/dashtrap/assets/js/pages/datatables.js"></script>
 
         <script src="/static/js/searches.js"></script>
+        <script src="/static/js/applications_work.js"></script>
 
         
     </body>
