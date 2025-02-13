@@ -55,6 +55,31 @@ class ApplicationDAO(BaseDAO):
                 await session.commit()
 
     @classmethod
+    async def add_remedial_users(cls, application_id: int, user_ids: list[int]):
+        """ Добавляет исполнителей к заявке (можно передавать несколько ID). """
+        async with async_session_maker() as session:
+            async with session.begin():
+                try:
+                    # Получаем объект заявки
+                    query = select(Application).filter(Application.id == application_id)
+                    result = await session.execute(query)
+                    application = result.scalar_one_or_none()
+                    
+                    if not application:
+                        return 0  # Если заявка не найдена
+
+                    # Добавляем новых исполнителей (если их еще нет)
+                    for user_id in user_ids:
+                        if user_id not in [u.id for u in application.remedial_users]:
+                            application.remedial_users.append(await session.get(User, user_id))
+
+                    await session.commit()
+                    return len(application.remedial_users)  # Количество исполнителей
+                except SQLAlchemyError as e:
+                    await session.rollback()
+                    raise e
+
+    @classmethod
     async def update_complaint_text(cls, application_id: int, complaint_text: str):
         async with async_session_maker() as session:
             async with session.begin():

@@ -1,9 +1,16 @@
-from sqlalchemy import text, String, Text
+from sqlalchemy import text, String, Text, Table, Column, Integer
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date
 from app.database import Base, str_uniq, int_pk
 
+# Промежуточная таблица для связи "многие ко многим"
+application_remedial_users = Table(
+    "application_remedial_users",
+    Base.metadata,
+    Column("application_id", Integer, ForeignKey("applications.id", ondelete="CASCADE"), primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+)
 
 class Application(Base):
     __tablename__ = "applications"
@@ -18,7 +25,6 @@ class Application(Base):
     # Внешний ключ на таблицу users
     user_id_created_application: Mapped[int] = mapped_column(ForeignKey("users.id"))
     application_status: Mapped[int] = mapped_column(nullable=True)
-    remedial_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     # Отношение с таблицей User
     # user: Mapped["User"] = relationship("User", back_populates="applications")
@@ -30,10 +36,16 @@ class Application(Base):
         foreign_keys=[user_id_created_application]
     )
 
-    remedial_user = relationship(
+    # remedial_user = relationship(
+    #     "User",
+    #     back_populates="remedial_applications",
+    #     foreign_keys=[remedial_user_id]
+    # )
+    # Новый список исполнителей (через промежуточную таблицу)
+    remedial_users = relationship(
         "User",
-        back_populates="remedial_applications",
-        foreign_keys=[remedial_user_id]
+        secondary=application_remedial_users,
+        back_populates="remedial_applications"
     )
 
     extend_existing = True
@@ -52,5 +64,4 @@ class Application(Base):
             "solution_description": self.solution_description,
             "user_id_created_application": self.user_id_created_application,
             "application_status": self.application_status,
-            "remedial_user_id": self.remedial_user_id,
         }

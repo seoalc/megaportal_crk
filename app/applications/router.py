@@ -40,10 +40,9 @@ async def add_application(application: SApplicationAdd) -> dict:
 async def update_remidial_user_to_application(application: SRemidialUserUpdate) -> dict:
     logger.info(f"ID заявки и исполнителя для обновления: {application}")
 
-    updated_rows = await ApplicationDAO.update_remedial_user(
-        application_id=application.application_id, 
-        application_status=application.application_status, 
-        remedial_user_id=application.remedial_user_id
+    updated_count = await ApplicationDAO.add_remedial_users(
+        application_id=application.application_id,
+        user_ids=application.remedial_user_ids
     )
 
     if updated_rows == 0:

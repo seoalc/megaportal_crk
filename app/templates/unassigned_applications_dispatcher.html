@@ -333,8 +333,14 @@
                                                     <td>{{ application.contact_number }}</td>
                                                     <td>
                                                         <div class="mt-3">
-                                                            <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
+                                                            <!-- <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
                                                                 <option selected>Выберите исполнителя</option>
+                                                                {% for user in users %}
+                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
+                                                                {% endfor %}
+                                                            </select> -->
+                                                            <h6>Выберите исполнителя (либо несколько)</h6>
+                                                            <select multiple class="form-control">
                                                                 {% for user in users %}
                                                                 <option value="{{ user.id }}">{{ user.fio }}</option>
                                                                 {% endfor %}

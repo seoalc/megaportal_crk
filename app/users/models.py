@@ -1,6 +1,7 @@
 from sqlalchemy import text, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base, str_uniq, int_pk
+from app.applications.models import application_remedial_users
 
 
 class User(Base):
@@ -20,10 +21,16 @@ class User(Base):
     )
 
     # Указываем, что связь идет по remedial_user_id
+    # remedial_applications = relationship(
+    #     "Application",
+    #     back_populates="remedial_user",
+    #     foreign_keys="Application.remedial_user_id"
+    # )
+    # Новый список назначенных заявок (через промежуточную таблицу)
     remedial_applications = relationship(
         "Application",
-        back_populates="remedial_user",
-        foreign_keys="Application.remedial_user_id"
+        secondary=application_remedial_users,
+        back_populates="remedial_users"
     )
 
     extend_existing = True

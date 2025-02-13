@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict
+from typing import List
 from datetime import datetime, date
 import re
 
@@ -31,8 +32,7 @@ class SRemidialUserUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     application_id: int = Field(..., description="ID заявки")
-    application_status: int = Field(..., description="Статус заявки")
-    remedial_user_id: int = Field(..., description="ID пользователя исполнителя")
+    remedial_user_ids: List[int]
 
 class SComplaintTextUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
