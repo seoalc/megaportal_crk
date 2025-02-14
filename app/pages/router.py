@@ -35,7 +35,7 @@ async def get_my_profile(request: Request, profile=Depends(get_me)):
     return templates.TemplateResponse(name='profile.html', context={'request': request, 'profile': profile})
 
 @router.get('/unassigned_applications')
-async def see_unassigned_applications(request: Request, profile=Depends(get_me), users=Depends(get_all_users)):
+async def see_unassigned_applications(request: Request, profile=Depends(get_me)):
     logger.info(f"Данные пользователя: {profile.user_status}")
     if profile.user_status == UserStatus.USER:
         return RedirectResponse(url="/pages/unassigned_applications/user")
@@ -45,15 +45,22 @@ async def see_unassigned_applications(request: Request, profile=Depends(get_me),
         return RedirectResponse(url="/pages/unassigned_applications/admin")
     else:
         raise HTTPException(status_code=400, detail="Неизвестная роль пользователя")
-    return templates.TemplateResponse(name='unassigned_applications.html', context={'request': request, 'profile': profile, 'users': users})
+    return templates.TemplateResponse(name='unassigned_applications.html', context={'request': request, 'profile': profile})
 
 @router.get('/unassigned_applications/user')
-async def see_unassigned_applications_user(request: Request, profile=Depends(get_current_user)):
+async def see_unassigned_applications_user(request: Request,
+        profile=Depends(get_current_user),
+        applications=Depends(ApplicationDAO.get_unassigned_applications)
+    ):
     if profile.user_status != UserStatus.USER:
         if profile.user_status == UserStatus.DISPATCHER:
             return RedirectResponse(url="/pages/unassigned_applications/dispatcher")
         elif profile.user_status == UserStatus.ADMIN:
             return RedirectResponse(url="/pages/unassigned_applications/admin")
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
     return templates.TemplateResponse(
         name='unassigned_applications.html',
         context={'request': request, 'profile': profile}
@@ -173,6 +180,28 @@ async def see_assigned_applications_dispatcher(
         users=Depends(get_all_users)
     ):
     logger.info(f"Заявки в работе: {applications}")
+    # Формируем данные
+    result = [
+        {
+            "id": app.id,
+            "appearance_date": app.appearance_date,
+            "subscriber_number": app.subscriber_number,
+            "subscriber_address": app.subscriber_addres,
+            "complaint_text": app.complaint_text,
+            "contact_number": app.contact_number,
+            "solution_description": app.solution_description,
+            "user_id_created_application": app.user_id_created_application,
+            "application_status": app.application_status,
+            "remedial_users": [
+                {"id": user.id, "fio": user.fio, "user_name": user.user_name}
+                for user in app.remedial_users
+            ],
+        }
+        for app in applications
+    ]
+
+    # Логируем полученные заявки
+    logger.info(f"Назначенные заявки: {result}")
     parts = profile.fio.split()  # Разбиваем строку по пробелам
     if len(parts) == 3:
         last_name, first_name, patronymic = parts

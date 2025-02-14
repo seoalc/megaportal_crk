@@ -1,10 +1,13 @@
 
 from sqlalchemy.future import select
 from sqlalchemy import update
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import selectinload
 from datetime import datetime, date
 from app.dao.base import BaseDAO
 from app.applications.models import Application
 from app.database import async_session_maker
+from app.users.models import User
 
  
 class ApplicationDAO(BaseDAO):
@@ -20,7 +23,7 @@ class ApplicationDAO(BaseDAO):
     @classmethod
     async def get_assigned_applications(cls):
         async with async_session_maker() as session:
-            query = select(cls.model).filter(cls.model.application_status == 1)
+            query = select(cls.model).filter(cls.model.application_status == 1).options(selectinload(cls.model.remedial_users))
             result = await session.execute(query)
             return result.scalars().all()
 
@@ -68,6 +71,9 @@ class ApplicationDAO(BaseDAO):
                     if not application:
                         return 0  # Если заявка не найдена
 
+                    # 🔥 Явно загружаем связанных исполнителей перед изменением
+                    await session.refresh(application, ["remedial_users"])
+
                     # Добавляем новых исполнителей (если их еще нет)
                     for user_id in user_ids:
                         if user_id not in [u.id for u in application.remedial_users]:
@@ -78,6 +84,18 @@ class ApplicationDAO(BaseDAO):
                 except SQLAlchemyError as e:
                     await session.rollback()
                     raise e
+
+    @classmethod
+    async def update_application_status(cls, application_id: int, application_status: int):
+        async with async_session_maker() as session:
+            async with session.begin():
+                query = (
+                    update(cls.model)
+                    .where(cls.model.id == application_id)
+                    .values(application_status=application_status)
+                )
+                await session.execute(query)
+                await session.commit()
 
     @classmethod
     async def update_complaint_text(cls, application_id: int, complaint_text: str):

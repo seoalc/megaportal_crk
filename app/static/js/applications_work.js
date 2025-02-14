@@ -6,11 +6,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target.classList.contains("assign_user")) {
             const row = event.target.closest("tr");
             const selectElement = row.querySelector(".user_select");
-            const selectedUserId = selectElement.value;
+            // const selectedUserId = selectElement.value;
+            const selectedUsers = [...row.querySelector(".user_select").selectedOptions].map(option => option.value);
             const applicationId = selectElement.dataset.applicationId;
 
-            if (!selectedUserId || selectedUserId === "Выберите исполнителя") {
-                alert("Выберите исполнителя!");
+            if (selectedUsers.length === 0) {
+                alert("Выберите хотя бы одного исполнителя!");
                 return;
             }
 
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({ 
                         application_id: applicationId, 
                         application_status: 1, 
-                        remedial_user_id: selectedUserId 
+                        remedial_user_ids: selectedUsers.map(Number) 
                     }),
                 });
 

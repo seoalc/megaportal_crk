@@ -328,6 +328,7 @@
                                                     <!-- <td>{{ application.appearance_date }}</td> -->
                                                     <td>
                                                         <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
+                                                        <br>
                                                         <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
                                                     </td>
                                                     <td>{{ application.contact_number }}</td>
@@ -340,12 +341,12 @@
                                                                 {% endfor %}
                                                             </select> -->
                                                             <h6>Выберите исполнителя (либо несколько)</h6>
-                                                            <select multiple class="form-control">
+                                                            <select class="user_select" multiple class="form-control" data-application-id="{{ application.id }}">
                                                                 {% for user in users %}
                                                                 <option value="{{ user.id }}">{{ user.fio }}</option>
                                                                 {% endfor %}
                                                             </select>
-                                                        </div>
+                                                        </div><br>
                                                         <!-- <input type="hidden" id="application_id" name="application_id" value="{{ application.id }}" /> -->
                                                         <p>
                                                             <button type="button" class="btn btn-soft-primary waves-effect waves-light assign_user">Назначить</button>

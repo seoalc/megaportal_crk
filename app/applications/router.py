@@ -45,8 +45,13 @@ async def update_remidial_user_to_application(application: SRemidialUserUpdate) 
         user_ids=application.remedial_user_ids
     )
 
-    if updated_rows == 0:
+    if updated_count == 0:
         raise HTTPException(status_code=404, detail="Заявка не найдена")
+    
+    updated_rows = await ApplicationDAO.update_application_status(
+        application_id=application.application_id,
+        application_status=1
+    )
 
     return {'ok': True, "application_id": application.application_id}
 
