@@ -63,7 +63,7 @@ async def see_unassigned_applications_user(request: Request,
         filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
     return templates.TemplateResponse(
         name='unassigned_applications.html',
-        context={'request': request, 'profile': profile}
+        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio}
     )
 
 @router.get('/unassigned_applications/dispatcher')
@@ -148,7 +148,7 @@ async def see_unassigned_applications_admin(request: Request, profile=Depends(ge
     )
 
 @router.get('/assigned_applications')
-async def see_assigned_applications(request: Request, profile=Depends(get_me), users=Depends(get_all_users)):
+async def see_assigned_applications(request: Request, profile=Depends(get_me)):
     logger.info(f"Данные пользователя: {profile.user_status}")
     if profile.user_status == UserStatus.USER:
         return RedirectResponse(url="/pages/assigned_applications/user")
@@ -167,9 +167,10 @@ async def see_assigned_applications_user(request: Request, profile=Depends(get_c
             return RedirectResponse(url="/pages/unassigned_applications/dispatcher")
         elif profile.user_status == UserStatus.ADMIN:
             return RedirectResponse(url="/pages/unassigned_applications/admin")
+    assigned_applications = await ApplicationDAO.get_assigned_applications_for_user(profile.id)
     return templates.TemplateResponse(
         name='assigned_applications.html',
-        context={'request': request, 'profile': profile}
+        context={'request': request, 'profile': profile, 'applications': assigned_applications}
     )
 
 @router.get('/assigned_applications/dispatcher')

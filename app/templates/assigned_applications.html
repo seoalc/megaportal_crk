@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Диспетчер | Неназначенные заявки</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -60,7 +60,7 @@
                         <li class="menu-item">
                             <a href="#menuExpages" data-bs-toggle="collapse" class="menu-link waves-effect waves-light">
                                 <span class="menu-icon"><i class="bx bx-file"></i></span>
-                                <span class="menu-text"> Заявки</span>
+                                <span class="menu-text"> Заявки </span>
                                 <span class="menu-arrow"></span>
                             </a>
                             <div class="collapse" id="menuExpages">
@@ -72,7 +72,7 @@
                                     </li>
                                     <li class="menu-item">
                                         <a href="/pages/assigned_applications" class="menu-link">
-                                            <span class="menu-text">На мне</span>
+                                            <span class="menu-text">Мои</span>
                                         </a>
                                     </li>
                                     <li class="menu-item">
@@ -292,7 +292,7 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Неназначенные заявки</h4>
+                                        <h4 class="header-title">Ваши заявки в работе</h4>
                                         <!-- <p class="text-muted font-size-13 mb-4">
                                             DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
                                             function:
@@ -328,16 +328,17 @@
                                                     <!-- <td>{{ application.appearance_date }}</td> -->
                                                     <td>
                                                         <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
-                                                        <br>
                                                         <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
                                                     </td>
                                                     <td>{{ application.contact_number }}</td>
                                                     <td>
-                                                        <!-- История исполнителей -->
+                                                        {% for remedial_user in application.remedial_users %}
+                                                            <h4>{{ remedial_user.fio }}</h4>
+                                                        {% endfor %}
                                                     </td>
                                                     <td>
                                                         <p>
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Хочу туда</button>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Закрыть</button>
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -359,7 +360,7 @@
                                         </table>
 
                                         {% else %}
-                                          <p class="text-center text-muted">Нет неназначенных заявок</p>
+                                          <p class="text-center text-muted">У вас нет заявок в работе</p>
                                         {% endif %}
 
                                     </div> <!-- end card body-->

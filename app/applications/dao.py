@@ -8,6 +8,7 @@ from app.dao.base import BaseDAO
 from app.applications.models import Application
 from app.database import async_session_maker
 from app.users.models import User
+from app.applications.models import application_remedial_users
 
  
 class ApplicationDAO(BaseDAO):
@@ -31,6 +32,21 @@ class ApplicationDAO(BaseDAO):
     async def get_applications_by_subscriber_number(cls, subscriber_number: int):
         async with async_session_maker() as session:
             query = select(cls.model).filter(cls.model.subscriber_number == subscriber_number)
+            result = await session.execute(query)
+            return result.scalars().all()
+
+    @classmethod
+    async def get_assigned_applications_for_user(cls, user_id: int):
+        async with async_session_maker() as session:
+            query = (
+                select(cls.model)
+                .join(application_remedial_users)  # Соединяем с промежуточной таблицей
+                .filter(
+                    application_remedial_users.c.user_id == user_id,  # Фильтр по ID исполнителя
+                    cls.model.application_status == 1  # Заявки в работе
+                )
+                .options(selectinload(cls.model.remedial_users))  # Подгружаем исполнителей
+            )
             result = await session.execute(query)
             return result.scalars().all()
 
