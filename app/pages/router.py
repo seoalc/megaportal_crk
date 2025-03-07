@@ -4,11 +4,13 @@ from fastapi.responses import RedirectResponse
 import shutil
 from enum import Enum
 
-from app.users.router import get_me, get_all_users
+from app.users.router import get_me, get_all_users, get_all_users_for_admin
 from app.users.dependencies import get_current_user, get_current_admin_user, get_current_dispatcher_user
 from app.users.models import User
 from app.users.dependencies import has_valid_token
 from app.applications.dao import ApplicationDAO
+from app.materials_types.dao import MaterialtypeDAO
+from app.materials_titles.dao import MaterialtitleDAO
 from app.utils.logging_config import logger
 
 
@@ -84,10 +86,20 @@ async def see_unassigned_applications_dispatcher(
     )
 
 @router.get('/unassigned_applications/admin')
-async def see_unassigned_applications_admin(request: Request, profile=Depends(get_current_admin_user)):
+async def see_unassigned_applications_admin(
+    request: Request,
+        profile=Depends(get_current_admin_user),
+        applications=Depends(ApplicationDAO.get_unassigned_applications),
+        users=Depends(get_all_users_for_admin)
+    ):
+    logger.info(f"Неназначенные заявки: {applications}")
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
     return templates.TemplateResponse(
         name='unassigned_applications_admin.html',
-        context={'request': request, 'profile': profile}
+        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio, 'users': users}
     )
 
 @router.get('/searchnumber/{subscriber_number}')
@@ -213,8 +225,78 @@ async def see_assigned_applications_dispatcher(
     )
 
 @router.get('/assigned_applications/admin')
-async def see_assigned_applications_admin(request: Request, profile=Depends(get_current_admin_user)):
+async def see_assigned_applications_admin(
+    request: Request,
+        profile=Depends(get_current_admin_user),
+        applications=Depends(ApplicationDAO.get_assigned_applications),
+        users=Depends(get_all_users_for_admin)
+    ):
+    logger.info(f"Заявки в работе: {applications}")
+    # Формируем данные
+    result = [
+        {
+            "id": app.id,
+            "appearance_date": app.appearance_date,
+            "subscriber_number": app.subscriber_number,
+            "subscriber_address": app.subscriber_addres,
+            "complaint_text": app.complaint_text,
+            "contact_number": app.contact_number,
+            "solution_description": app.solution_description,
+            "user_id_created_application": app.user_id_created_application,
+            "application_status": app.application_status,
+            "remedial_users": [
+                {"id": user.id, "fio": user.fio, "user_name": user.user_name}
+                for user in app.remedial_users
+            ],
+        }
+        for app in applications
+    ]
+
+    # Логируем полученные заявки
+    logger.info(f"Назначенные заявки: {result}")
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
     return templates.TemplateResponse(
-        name='assigned_applications_admin.html',
-        context={'request': request, 'profile': profile}
+        name='assigned_applications_dispatcher.html',
+        context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio, 'users': users}
+    )
+
+@router.get('/store_get')
+async def get_to_store(request: Request, profile=Depends(get_me)):
+    logger.info(f"Данные пользователя: {profile.user_status}")
+    if profile.user_status == UserStatus.USER:
+        return RedirectResponse(url="/pages/assigned_applications/user")
+    elif profile.user_status == UserStatus.DISPATCHER:
+        return RedirectResponse(url="/pages/assigned_applications/dispatcher")
+    elif profile.user_status == UserStatus.ADMIN:
+        return RedirectResponse(url="/pages/store_get/admin")
+    else:
+        raise HTTPException(status_code=400, detail="Неизвестная роль пользователя")
+    return templates.TemplateResponse(name='assigned_applications.html', context={'request': request, 'profile': profile, 'users': users})
+
+@router.get('/store_get/admin')
+async def get_to_store_admin(
+    request: Request,
+        profile=Depends(get_current_admin_user),
+        users=Depends(get_all_users_for_admin)
+    ):
+
+    # Получаем все типы материалов из базы
+    material_types = await MaterialtypeDAO.find_all()
+    
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
+    return templates.TemplateResponse(
+        name='store_get_admin.html',
+        context={
+            'request': request,
+            'profile': profile,
+            'filtered_fio': filtered_fio,
+            'users': users,
+            'material_types': material_types  # Передаём типы материалов в шаблон
+        }
     )

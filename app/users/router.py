@@ -44,3 +44,7 @@ async def logout_user(response: Response):
 @router.get("/all_users/")
 async def get_all_users(user_data: User = Depends(get_current_dispatcher_user)):
     return await UsersDAO.find_all()
+
+@router.get("/all_users_for_admin/")
+async def get_all_users_for_admin(user_data: User = Depends(get_current_admin_user)):
+    return await UsersDAO.find_all()

@@ -13,8 +13,13 @@ from os.path import dirname, abspath
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from app.database import DATABASE_URL, Base
+from app.material_users.models import Material_user
 from app.users.models import User
 from app.applications.models import Application
+from app.materials_types.models import Material_type
+from app.materials_titles.models import Material_title
+from app.material_stocks.models import Material_stock
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Диспетчер | Неназначенные заявки</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -36,7 +36,7 @@
 
                 <!--- Menu -->
                 <div data-simplebar>
-                  {% include "blocks/admin_menu.html" %}
+                    {% include "blocks/admin_menu.html" %}
                 </div>
             </div>
 
@@ -240,98 +240,181 @@
                         <!-- end page title -->
 
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Неназначенные заявки</h4>
-                                        <!-- <p class="text-muted font-size-13 mb-4">
-                                            DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
-                                            function:
-                                            <code>$().DataTable();</code>.
-                                        </p> -->
-                                        {% if applications %}
-                                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
-                                            <thead>
-                                                <tr>
-                                                    <th>№</th>
-                                                    <th>Номер абонента</th>
-                                                    <th>Жалоба</th>
-                                                    <th>Адрес</th>
-                                                    <th>Дата явки</th>
-                                                    <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
-                                                </tr>
-                                            </thead>
-                                        
-                                        
-                                            <tbody>
-                                                {% for application in applications %}
-                                                <tr>
-                                                    <td>{{ loop.index }}</td>
-                                                    <td>{{ application.subscriber_number }}</td>
-                                                    <td>
-                                                        <textarea class="form-control complaint_text" name="complaint_text" rows="5" data-application-id="{{ application.id }}">{{ application.complaint_text }}
-                                                        </textarea>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_complaint_text">Изменить</button>
-                                                    </td>
-                                                    <td>{{ application.subscriber_addres }}</td>
-                                                    <!-- <td>{{ application.appearance_date }}</td> -->
-                                                    <td>
-                                                        <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
-                                                        <br>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
-                                                    </td>
-                                                    <td>{{ application.contact_number }}</td>
-                                                    <td>
-                                                        <div class="mt-3">
-                                                            <!-- <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
-                                                                <option selected>Выберите исполнителя</option>
-                                                                {% for user in users %}
-                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
-                                                                {% endfor %}
-                                                            </select> -->
-                                                            <h6>Выберите исполнителя (либо несколько)</h6>
-                                                            <select class="user_select" multiple class="form-control" data-application-id="{{ application.id }}">
-                                                                {% for user in users %}
-                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div><br>
-                                                        <!-- <input type="hidden" id="application_id" name="application_id" value="{{ application.id }}" /> -->
-                                                        <p>
-                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light assign_user">Назначить</button>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <p>
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Отказ</button>
-                                                        </p>
-                                                        <p>
-                                                            <button type="button" class="btn btn-danger waves-effect waves-light delete_application_button">Удалить</button>
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
+                                        <h4 class="header-title">Выдача материалов выездным</h4>
+                                        <form class="form-horizontal" role="form" id="add_material_to_user">
+                                            <div class="mb-2 row">
+                                                <label for="material_user_id" class="col-md-2 col-form-label">Выберите выездного</label>
+                                                <div class="col-md-10">
+                                                    <select id="material_user_id" class="form-select">
+                                                        <option>Выберите выездного</option>
+                                                        {% for user in users %}
+                                                        <option value="{{ user.id }}">{{ user.fio }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2 row">
+                                                    <label for="material_type_to_user" class="col-md-2 col-form-label">Выберите тип материала</label>
+                                                    <div class="col-md-10">
+                                                        <select id="material_type_to_user" class="form-select">
+                                                            <option>Тип материала</option>
+                                                            {% for material in material_types %}
+                                                            <option value="{{ material.id }}">{{ material.material_type }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2 row">
+                                                    <label for="material_title_to_user" class="col-md-2 col-form-label">Выберите наименование</label>
+                                                    <div class="col-md-10">
+                                                        <select id="material_title_to_user" class="form-select" disabled>
+                                                            <option value="">Сначала выберите тип материала</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2 row" id="material_user_div">
 
-                                            <tfoot>
-                                                <tr>
-                                                    <th>№</th>
-                                                    <th>Номер абонента</th>
-                                                    <th>Жалоба</th>
-                                                    <th>Адрес</th>
-                                                    <th>Дата явки</th>
-                                                    <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
 
-                                        {% else %}
-                                          <p class="text-center text-muted">Нет неназначенных заявок</p>
-                                        {% endif %}
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Выдача оборудования выездным</h4>
+                                        
+
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                        </div>
+                        <!-- end row-->
+
+                        <div class="row">
+                            
+                        </div>
+                        <!-- end row-->
+
+                        <div class="row">
+                            <h3>Добавление на склад</h3>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление материалов на склад</h4>
+                                        <form class="form-horizontal" role="form" id="add_material_to_stock">
+                                            <div class="mb-2 row">
+                                                <label for="material_type_to_stock" class="col-md-2 col-form-label">Выберите тип материала</label>
+                                                <div class="col-md-10">
+                                                    <select id="material_type_to_stock" class="form-select">
+                                                        <option>Тип материала</option>
+                                                        {% for material in material_types %}
+                                                        <option value="{{ material.id }}">{{ material.material_type }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2 row">
+                                                <label for="material_title_to_stock" class="col-md-2 col-form-label">Выберите наименование</label>
+                                                <div class="col-md-10">
+                                                    <select id="material_title_to_stock" class="form-select" disabled>
+                                                        <option value="">Сначала выберите тип материала</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2 row">
+                                                <label class="col-md-2 col-form-label" for="quantity_to_stock">Введите количество цифрой</label>
+                                                <div class="col-md-10">
+                                                    <input type="text" class="form-control" id="quantity_to_stock" name="quantity_to_stock" placeholder="Укажите количество...">
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-success waves-effect waves-light" dir="ltr" data-style="expand-left" id="send_quantity_material_to_stock">
+                                                Отправить
+                                            </button>
+                                        </form>
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление оборудования на склад</h4>
+                                        
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                        </div>
+                        <!-- end row-->
+
+                        <div class="row">
+                            <h3>Добавление в базу <span class="badge bg-danger">Важно</span></h3>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление в базу нового типа материала</h4>
+                                        <form class="form-horizontal" role="form" id="new-material-type">
+                                            <div class="mb-2 row">
+                                                <label class="col-md-2 col-form-label" for="material_type_input">Тип материала</label>
+                                                <div class="col-md-10">
+                                                    <input type="text" class="form-control" id="material_type_input" name="material_type_input" placeholder="Укажите тип материала...">
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-success waves-effect waves-light" dir="ltr" data-style="expand-left" id="send_new_material_type">
+                                                Отправить
+                                            </button>
+                                        </form>
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление в базу нового типа оборудования</h4>
+                                        
+
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление в базу нового наименования материала</h4>
+                                        <form class="form-horizontal" role="form" id="new-material-type">
+                                            <div class="mb-2 row">
+                                                <label for="material_title_select" class="col-md-2 col-form-label">Выберите тип материала</label>
+                                                <div class="col-md-10">
+                                                    <select id="material_title_select" class="form-select">
+                                                        <option>Тип материала</option>
+                                                        {% for material in material_types %}
+                                                        <option value="{{ material.id }}">{{ material.material_type }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2 row">
+                                                <label class="col-md-2 col-form-label" for="material_title_input">Наименование материала</label>
+                                                <div class="col-md-10">
+                                                    <input type="text" class="form-control" id="material_title_input" name="material_type_input" placeholder="Укажите наименование материала...">
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-success waves-effect waves-light" dir="ltr" data-style="expand-left" id="send_new_material_title">
+                                                Отправить
+                                            </button>
+                                        </form>
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                            </div><!-- end col-->
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title">Добавление в базу нового наименования оборудования</h4>
+                                        
 
                                     </div> <!-- end card body-->
                                 </div> <!-- end card -->
@@ -382,6 +465,7 @@
 
         <script src="/static/js/searches.js"></script>
         <script src="/static/js/applications_work.js"></script>
+        <script src="/static/js/materials_work.js"></script>
 
         
     </body>

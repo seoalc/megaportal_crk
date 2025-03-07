@@ -2,6 +2,7 @@ from sqlalchemy import text, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base, str_uniq, int_pk
 from app.applications.models import application_remedial_users
+from app.material_users.models import Material_user
 
 
 class User(Base):
@@ -18,6 +19,13 @@ class User(Base):
         "Application",
         back_populates="creator",
         foreign_keys="Application.user_id_created_application"
+    )
+
+    # Отношение к таблице material_user (материалы на руках у пользователя)
+    material_assignments: Mapped[list["Material_user"]] = relationship(
+        "Material_user",
+        back_populates="user",
+        lazy="noload"
     )
 
     # Указываем, что связь идет по remedial_user_id

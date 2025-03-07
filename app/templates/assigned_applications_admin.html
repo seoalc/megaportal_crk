@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Диспетчер | Неназначенные заявки</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -36,7 +36,7 @@
 
                 <!--- Menu -->
                 <div data-simplebar>
-                  {% include "blocks/admin_menu.html" %}
+                    {% include "blocks/admin_menu.html" %}
                 </div>
             </div>
 
@@ -243,7 +243,7 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Неназначенные заявки</h4>
+                                        <h4 class="header-title">Заявки в работе</h4>
                                         <!-- <p class="text-muted font-size-13 mb-4">
                                             DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
                                             function:
@@ -279,19 +279,15 @@
                                                     <!-- <td>{{ application.appearance_date }}</td> -->
                                                     <td>
                                                         <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
-                                                        <br>
                                                         <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
                                                     </td>
                                                     <td>{{ application.contact_number }}</td>
                                                     <td>
+                                                        {% for remedial_user in application.remedial_users %}
+                                                            <h4>{{ remedial_user.fio }}</h4>
+                                                        {% endfor %}
                                                         <div class="mt-3">
-                                                            <!-- <select class="form-select form-select-sm user_select" aria-label=".form-select-sm example" data-application-id="{{ application.id }}">
-                                                                <option selected>Выберите исполнителя</option>
-                                                                {% for user in users %}
-                                                                <option value="{{ user.id }}">{{ user.fio }}</option>
-                                                                {% endfor %}
-                                                            </select> -->
-                                                            <h6>Выберите исполнителя (либо несколько)</h6>
+                                                            <h6>Можете сменить или добавить</h6>
                                                             <select class="user_select" multiple class="form-control" data-application-id="{{ application.id }}">
                                                                 {% for user in users %}
                                                                 <option value="{{ user.id }}">{{ user.fio }}</option>
@@ -300,15 +296,15 @@
                                                         </div><br>
                                                         <!-- <input type="hidden" id="application_id" name="application_id" value="{{ application.id }}" /> -->
                                                         <p>
-                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light assign_user">Назначить</button>
+                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light">Сменить исполнителя</button>
+                                                        </p>
+                                                        <p>
+                                                            <button type="button" class="btn btn-soft-primary waves-effect waves-light">Добавить исполнителя</button>
                                                         </p>
                                                     </td>
                                                     <td>
                                                         <p>
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Отказ</button>
-                                                        </p>
-                                                        <p>
-                                                            <button type="button" class="btn btn-danger waves-effect waves-light delete_application_button">Удалить</button>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Закрыть</button>
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -330,7 +326,7 @@
                                         </table>
 
                                         {% else %}
-                                          <p class="text-center text-muted">Нет неназначенных заявок</p>
+                                          <p class="text-center text-muted">Нет заявок в работе</p>
                                         {% endif %}
 
                                     </div> <!-- end card body-->
