@@ -14,6 +14,13 @@ class MaterialtitleDAO(BaseDAO):
     model = Material_title
 
     @classmethod
+    async def get_material_title_by_id(cls, id: int):
+        async with async_session_maker() as session:
+            query = select(cls.model).filter(cls.model.id == id)
+            result = await session.execute(query)
+            return result.scalar_one_or_none()
+
+    @classmethod
     async def get_materials_titles_by_type(cls, material_type_id: int):
         async with async_session_maker() as session:
             query = select(cls.model).filter(cls.model.material_type_id == material_type_id)

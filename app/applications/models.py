@@ -22,6 +22,7 @@ class Application(Base):
     complaint_text: Mapped[str] = mapped_column(Text, nullable=True)
     contact_number: Mapped[str] = mapped_column(String(length=15))
     solution_description: Mapped[str] = mapped_column(Text, nullable=True)
+    closed_text: Mapped[str] = mapped_column(Text, nullable=True)
     # Внешний ключ на таблицу users
     user_id_created_application: Mapped[int] = mapped_column(ForeignKey("users.id"))
     application_status: Mapped[int] = mapped_column(nullable=True)
@@ -62,6 +63,7 @@ class Application(Base):
             "complaint_text": self.complaint_text,
             "contact_number": self.contact_number,
             "solution_description": self.solution_description,
+            "closed_text": self.closed_text,
             "user_id_created_application": self.user_id_created_application,
             "application_status": self.application_status,
         }

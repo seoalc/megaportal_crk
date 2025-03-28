@@ -14,6 +14,13 @@ class MaterialuserDAO(BaseDAO):
     model = Material_user
 
     @classmethod
+    async def get_materials_user_qantity_by_user_id(cls, user_id: int):
+        async with async_session_maker() as session:
+            query = select(cls.model).filter(cls.model.user_id == user_id)
+            result = await session.execute(query)
+            return result.scalars().all()
+
+    @classmethod
     async def add_material_to_user(cls, material_title_id: int, user_id: int, quantity: int):
         logger.info(f"Наименование материала из DAO: {material_title_id}")
         async with async_session_maker() as session:

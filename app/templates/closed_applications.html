@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Диспетчер | Неназначенные заявки</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -22,6 +22,7 @@
 		<link href="/static/dashtrap/assets/css/style.min.css" rel="stylesheet" type="text/css">
 		<link href="/static/dashtrap/assets/css/icons.min.css" rel="stylesheet" type="text/css">
 		<script src="/static/dashtrap/assets/js/config.js"></script>
+        <link href="/static/style/my.css" rel="stylesheet" type="text/css">
     </head>
 
     <body>
@@ -243,24 +244,24 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Неназначенные заявки</h4>
+                                        <h4 class="header-title">Ваши закрытые заявки</h4>
                                         <!-- <p class="text-muted font-size-13 mb-4">
                                             DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
                                             function:
                                             <code>$().DataTable();</code>.
                                         </p> -->
                                         {% if applications %}
-                                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                                        <table id="closed_by_user-datatable" class="table dt-responsive nowrap w-100">
                                             <thead>
                                                 <tr>
                                                     <th>№</th>
                                                     <th>Номер абонента</th>
                                                     <th>Жалоба</th>
                                                     <th>Адрес</th>
-                                                    <th>Дата явки</th>
+                                                    <th>Дата закрытия</th>
                                                     <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
+                                                    <th>Ваша отписка</th>
+                                                    <th>Списать</th>
                                                 </tr>
                                             </thead>
                                         
@@ -270,26 +271,30 @@
                                                 <tr>
                                                     <td>{{ loop.index }}</td>
                                                     <td>{{ application.subscriber_number }}</td>
-                                                    <td>
-                                                        <textarea class="form-control complaint_text" name="complaint_text" rows="5" data-application-id="{{ application.id }}">{{ application.complaint_text }}
-                                                        </textarea>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_complaint_text">Изменить</button>
+                                                    <td class="complaint-text-cell ">
+                                                        {{ application.complaint_text }}
                                                     </td>
                                                     <td>{{ application.subscriber_addres }}</td>
                                                     <!-- <td>{{ application.appearance_date }}</td> -->
                                                     <td>
-                                                        <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
-                                                        <br>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
+                                                        {{ application.updated_at }}
                                                     </td>
                                                     <td>{{ application.contact_number }}</td>
-                                                    <td>
-                                                        <!-- История исполнителей -->
+                                                    <td class="complaint-text-cell ">
+                                                        {{ application.closed_text }}
                                                     </td>
                                                     <td>
-                                                        <p>
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Хочу туда</button>
+                                                        <form class="p-3" id="application_id_write_of_form" action="/pages/store_write_of/" method="post">
+                                                            <input type="hidden" name="application_id_write_of" class="form-control">
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light write_of_material_from_user" data-application-id="{{ application.id }}">Списать</button>
+                                                            <input type="submit">
+                                                        </form>
+                                                        <!-- <p>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light write_of_material_from_user" data-application-id="{{ application.id }}">Списать материалы</button>
                                                         </p>
+                                                        <p>
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light write_of_hardware_from_user" data-application-id="{{ application.id }}">Списать оборудование</button>
+                                                        </p> -->
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -301,16 +306,16 @@
                                                     <th>Номер абонента</th>
                                                     <th>Жалоба</th>
                                                     <th>Адрес</th>
-                                                    <th>Дата явки</th>
+                                                    <th>Дата закрытия</th>
                                                     <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
+                                                    <th>Ваша отписка</th>
+                                                    <th>Списать</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
 
                                         {% else %}
-                                          <p class="text-center text-muted">Нет неназначенных заявок</p>
+                                          <p class="text-center text-muted">У вас нет заявок в работе</p>
                                         {% endif %}
 
                                     </div> <!-- end card body-->
@@ -362,6 +367,7 @@
 
         <script src="/static/js/searches.js"></script>
         <script src="/static/js/applications_work.js"></script>
+        <script src="/static/js/write_of_materials.js"></script>
 
         
     </body>

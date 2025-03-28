@@ -132,7 +132,50 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Произошла ошибка при удалении заявки");
             }
         }
+
+        // Закрытие заявки
+        if (event.target.classList.contains("close_application_from_user")) {
+            const row = event.target.closest("tr");
+            const appearanceDateInput = row.querySelector(".appearance_date");
+            const applicationId = appearanceDateInput.dataset.applicationId;
+            const closedTextArea = row.querySelector(".closed_text");
+            const closedText = closedTextArea.value;
+
+            const isConfirmed = window.confirm("Вы собираетесь закрыть заявку.\nПодтвердите действие.");
+
+            if (!isConfirmed) {
+                return; // Отмена закрытия, если пользователь нажал "Отмена"
+            }
+
+            try {
+                const response = await fetch("/application/closeapplication/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ 
+                        application_id: applicationId, 
+                        closed_text: closedText 
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ошибка при изменении даты");
+                }
+                
+                window.location.reload();
+            } catch (error) {
+                console.error("Ошибка:", error);
+                alert("Произошла ошибка при изменении даты");
+            }
+        }
     });
+
+    // document.getElementById('close_application_from_user').addEventListener("click", async function (event) {
+    //     event.preventDefault(); // Останавливаем стандартное поведение (перезагрузку страницы)
+        
+    //     alert(123);
+    // });
 });
 
 // document.addEventListener("DOMContentLoaded", function () {

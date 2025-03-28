@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.applications.dao import ApplicationDAO
 from app.applications.schemas import SApplicationAdd, SRemidialUserUpdate, SComplaintTextUpdate, SAppearanceDateUpdate
-from app.applications.schemas import SDeleteApplication
+from app.applications.schemas import SDeleteApplication, SClosedText
 # from app.users.dependencies import get_current_user, get_current_admin_user
 from app.applications.models import Application
 from app.utils.logging_config import logger
@@ -90,6 +90,21 @@ async def delete_application(application: SDeleteApplication) -> dict:
     deleted_rows = await ApplicationDAO.delete_application(application.application_id)
 
     if deleted_rows == 0:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    return {'ok': True, "application_id": application.application_id}
+
+@router.post("/closeapplication/")
+async def close_application(application: SClosedText) -> dict:
+    logger.info(f"Информация по закрытию заявки: {application}")
+
+    updated_rows = await ApplicationDAO.close_application(
+        application_id=application.application_id, 
+        closed_text=application.closed_text,
+        application_status=2
+    )
+
+    if updated_rows == 0:
         raise HTTPException(status_code=404, detail="Заявка не найдена")
 
     return {'ok': True, "application_id": application.application_id}

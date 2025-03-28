@@ -40,6 +40,12 @@ class SComplaintTextUpdate(BaseModel):
     application_id: int = Field(..., description="ID заявки")
     complaint_text: str = Field(default=..., description="Текст жалобы")
 
+class SClosedText(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    application_id: int = Field(..., description="ID заявки")
+    closed_text: str = Field(default=..., description="Текст жалобы")
+
 class SAppearanceDateUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     

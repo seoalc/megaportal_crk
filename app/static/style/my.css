@@ -29,3 +29,9 @@
     cursor: pointer;
 }
 
+.complaint-text-cell {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    /* max-width: 200px;  */
+    white-space: normal !important; /* Разрешает перенос текста */
+}

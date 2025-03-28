@@ -51,6 +51,21 @@ class ApplicationDAO(BaseDAO):
             return result.scalars().all()
 
     @classmethod
+    async def get_closed_applications_for_user(cls, user_id: int):
+        async with async_session_maker() as session:
+            query = (
+                select(cls.model)
+                .join(application_remedial_users)  # Соединяем с промежуточной таблицей
+                .filter(
+                    application_remedial_users.c.user_id == user_id,  # Фильтр по ID исполнителя
+                    cls.model.application_status == 2  # Заявки закрытые пользователем
+                )
+                .options(selectinload(cls.model.remedial_users))  # Подгружаем исполнителей
+            )
+            result = await session.execute(query)
+            return result.scalars().all()
+
+    @classmethod
     async def add_application(cls, **application_data: dict):
         async with async_session_maker() as session:
             async with session.begin():
@@ -121,6 +136,18 @@ class ApplicationDAO(BaseDAO):
                     update(cls.model)
                     .where(cls.model.id == application_id)
                     .values(complaint_text=complaint_text)
+                )
+                await session.execute(query)
+                await session.commit()
+
+    @classmethod
+    async def close_application(cls, application_id: int, closed_text: str, application_status: int):
+        async with async_session_maker() as session:
+            async with session.begin():
+                query = (
+                    update(cls.model)
+                    .where(cls.model.id == application_id)
+                    .values(closed_text=closed_text, application_status=application_status)
                 )
                 await session.execute(query)
                 await session.commit()

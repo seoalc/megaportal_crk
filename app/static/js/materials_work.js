@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const sendMatButton = document.querySelector("#send_new_material_type");
     const sendMatTitleButton = document.querySelector("#send_new_material_title");
+    const tableClosedByUser = document.querySelector("#closed_by_user-datatable");
 
     sendMatButton.addEventListener("click", async function (event) {
         event.preventDefault(); // Останавливаем стандартное поведение (перезагрузку страницы)
@@ -240,6 +241,15 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => {
             console.error('Ошибка при загрузке количества:', error);
         });
+    });
+
+    tableClosedByUser.addEventListener("click", async function (event) {
+        // Обновление текста жалобы
+        if (event.target.classList.contains("write_of_material_from_user")) {
+            alert(1);
+
+            
+        }
     });
 
     

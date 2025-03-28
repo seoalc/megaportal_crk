@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Диспетчер | Неназначенные заявки</title>
+        <title>Диспетчер | Заявки в работе</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Myra Studio" name="author" />
@@ -240,87 +240,43 @@
                         <!-- end page title -->
 
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title">Неназначенные заявки</h4>
-                                        <!-- <p class="text-muted font-size-13 mb-4">
-                                            DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction
-                                            function:
-                                            <code>$().DataTable();</code>.
-                                        </p> -->
-                                        {% if applications %}
-                                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                                        <h4 class="header-title">Ваши материалы</h4>
+                                        <table id="user_materials_table" class="table dt-responsive nowrap w-100">
                                             <thead>
                                                 <tr>
-                                                    <th>№</th>
-                                                    <th>Номер абонента</th>
-                                                    <th>Жалоба</th>
-                                                    <th>Адрес</th>
-                                                    <th>Дата явки</th>
-                                                    <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
+                                                    <th>Тип материала</th>
+                                                    <th>Наименование материала</th>
+                                                    <th>Количество</th>
                                                 </tr>
                                             </thead>
-                                        
-                                        
+
                                             <tbody>
-                                                {% for application in applications %}
-                                                <tr>
-                                                    <td>{{ loop.index }}</td>
-                                                    <td>{{ application.subscriber_number }}</td>
-                                                    <td>
-                                                        <textarea class="form-control complaint_text" name="complaint_text" rows="5" data-application-id="{{ application.id }}">{{ application.complaint_text }}
-                                                        </textarea>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_complaint_text">Изменить</button>
-                                                    </td>
-                                                    <td>{{ application.subscriber_addres }}</td>
-                                                    <!-- <td>{{ application.appearance_date }}</td> -->
-                                                    <td>
-                                                        <input class="form-control appearance_date" type="date" name="appearance_date" value="{{ application.appearance_date }}" data-application-id="{{ application.id }}">
-                                                        <br>
-                                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light change_appearance_date">Изменить</button>
-                                                    </td>
-                                                    <td>{{ application.contact_number }}</td>
-                                                    <td>
-                                                        <!-- История исполнителей -->
-                                                    </td>
-                                                    <td>
-                                                        <p>
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light">Хочу туда</button>
-                                                        </p>
-                                                    </td>
-                                                </tr>
+                                                {% for material in materials_data %}
+                                                    <tr>
+                                                        <td>{{ material.type }}</td>
+                                                        <td>{{ material.title }}</td>
+                                                        <td>{{ material.quantity }}</td>
+                                                    </tr>
                                                 {% endfor %}
                                             </tbody>
 
                                             <tfoot>
                                                 <tr>
-                                                    <th>№</th>
-                                                    <th>Номер абонента</th>
-                                                    <th>Жалоба</th>
-                                                    <th>Адрес</th>
-                                                    <th>Дата явки</th>
-                                                    <th>Контактный номер</th>
-                                                    <th>Исполнитель</th>
-                                                    <th>Действия</th>
+                                                    <th>Тип материала</th>
+                                                    <th>Наименование материала</th>
+                                                    <th>Количество</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
-
-                                        {% else %}
-                                          <p class="text-center text-muted">Нет неназначенных заявок</p>
-                                        {% endif %}
-
-                                    </div> <!-- end card body-->
-                                </div> <!-- end card -->
+                                    </div>
+                                </div>
                             </div><!-- end col-->
+
                         </div>
-                        <!-- end row-->
-
-
-                        
+                        <!-- end row-->                        
                         
                     </div> <!-- container -->
 
@@ -362,6 +318,7 @@
 
         <script src="/static/js/searches.js"></script>
         <script src="/static/js/applications_work.js"></script>
+        <script src="/static/js/materials_work.js"></script>
 
         
     </body>

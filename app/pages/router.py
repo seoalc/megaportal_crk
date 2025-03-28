@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, UploadFile
+from fastapi import APIRouter, Request, Depends, UploadFile, Body
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 import shutil
@@ -11,6 +11,7 @@ from app.users.dependencies import has_valid_token
 from app.applications.dao import ApplicationDAO
 from app.materials_types.dao import MaterialtypeDAO
 from app.materials_titles.dao import MaterialtitleDAO
+from app.material_users.dao import MaterialuserDAO
 from app.utils.logging_config import logger
 
 
@@ -263,6 +264,32 @@ async def see_assigned_applications_admin(
         context={'request': request, 'profile': profile, 'applications': applications, 'filtered_fio': filtered_fio, 'users': users}
     )
 
+@router.get('/closed_applications')
+async def see_closed_applications(request: Request, profile=Depends(get_me)):
+    logger.info(f"Данные пользователя: {profile.user_status}")
+    if profile.user_status == UserStatus.USER:
+        return RedirectResponse(url="/pages/closed_applications/user")
+    elif profile.user_status == UserStatus.DISPATCHER:
+        return RedirectResponse(url="/pages/closed_applications/dispatcher")
+    elif profile.user_status == UserStatus.ADMIN:
+        return RedirectResponse(url="/pages/closed_applications/admin")
+    else:
+        raise HTTPException(status_code=400, detail="Неизвестная роль пользователя")
+    return templates.TemplateResponse(name='closed_applications.html', context={'request': request, 'profile': profile, 'users': users})
+
+@router.get('/closed_applications/user')
+async def see_closed_applications_user(request: Request, profile=Depends(get_current_user)):
+    if profile.user_status != UserStatus.USER:
+        if profile.user_status == UserStatus.DISPATCHER:
+            return RedirectResponse(url="/pages/closed_applications/dispatcher")
+        elif profile.user_status == UserStatus.ADMIN:
+            return RedirectResponse(url="/pages/closed_applications/admin")
+    closed_applications = await ApplicationDAO.get_closed_applications_for_user(profile.id)
+    return templates.TemplateResponse(
+        name='closed_applications.html',
+        context={'request': request, 'profile': profile, 'applications': closed_applications}
+    )
+
 @router.get('/store_get')
 async def get_to_store(request: Request, profile=Depends(get_me)):
     logger.info(f"Данные пользователя: {profile.user_status}")
@@ -298,5 +325,88 @@ async def get_to_store_admin(
             'filtered_fio': filtered_fio,
             'users': users,
             'material_types': material_types  # Передаём типы материалов в шаблон
+        }
+    )
+
+@router.get('/store_get/user')
+async def get_to_store_user(
+    request: Request,
+        profile=Depends(get_current_user)
+    ):
+
+    # Получаем все типы материалов из базы
+    materials_qantities = await MaterialuserDAO.get_materials_user_qantity_by_user_id(profile.id)
+    # Создаем список для хранения данных о материалах
+    materials_data = []
+    for m_q in materials_qantities:
+        logger.info(f"Данные о количестве: {m_q.quantity}")
+        material_title_info = await MaterialtitleDAO.get_material_title_by_id(m_q.material_title_id)
+        material_type_info = await MaterialtypeDAO.get_material_type_by_id(material_title_info.material_type_id)
+
+        # Добавляем данные о каждом материале в список
+        materials_data.append({
+            'quantity': m_q.quantity,
+            'title': material_title_info.material_title,  # Предполагается, что есть поле title
+            'type': material_type_info.material_type  # Предполагается, что есть поле type_name
+        })
+    logger.info(f"Данные о количестве: {materials_qantities}")
+    
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
+    return templates.TemplateResponse(
+        name='store_get_user.html',
+        context={
+            'request': request,
+            'profile': profile,
+            'filtered_fio': filtered_fio,
+            'materials_data': materials_data
+        }
+    )
+
+@router.post('/store_write_of')
+async def get_to_store(request: Request, data: dict = Body(...), profile=Depends(get_me)):
+    application_id = data.get("application_id_write_of")
+    logger.info(f"Получен POST-запрос с application_id: {application_id}")
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
+
+    if profile.user_status == UserStatus.USER:
+        return templates.TemplateResponse(
+            name='store_write_of_user.html',
+            context={
+                'request': request,
+                'profile': profile,
+                'filtered_fio': filtered_fio
+            }
+        )
+    elif profile.user_status == UserStatus.DISPATCHER:
+        return RedirectResponse(url="/pages/store_write_of/dispatcher")
+    elif profile.user_status == UserStatus.ADMIN:
+        return RedirectResponse(url="/pages/store_write_of/admin")
+    else:
+        raise HTTPException(status_code=400, detail="Неизвестная роль пользователя")
+    #return templates.TemplateResponse(name='assigned_applications.html', context={'request': request, 'profile': profile, 'users': users})
+
+@router.post('/store_write_of/user')
+async def get_to_store_user(
+    request: Request,
+        profile=Depends(get_current_user)
+    ):
+
+    parts = profile.fio.split()  # Разбиваем строку по пробелам
+    if len(parts) == 3:
+        last_name, first_name, patronymic = parts
+        filtered_fio = f"{last_name} {first_name[0]}. {patronymic[0]}."
+
+    return templates.TemplateResponse(
+        name='store_write_of_user.html',
+        context={
+            'request': request,
+            'profile': profile,
+            'filtered_fio': filtered_fio
         }
     )
